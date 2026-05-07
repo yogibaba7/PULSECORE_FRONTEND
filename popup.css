@@ -1,0 +1,77 @@
+/* Full extension body */
+body {
+
+    width: 300px;
+
+    padding: 15px;
+
+    font-family: Arial;
+
+    background-color: #f5f5f5;
+}
+
+/* Title */
+h1 {
+
+    text-align: center;
+
+    color: #333;
+}
+
+/* Text area */
+textarea {
+
+    width: 100%;
+
+    height: 120px;
+
+    margin-top: 10px;
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+    border: 1px solid #ccc;
+
+    resize: none;
+}
+
+/* Button */
+button {
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 10px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background-color: #4CAF50;
+
+    color: white;
+
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+/* Hover effect */
+button:hover {
+
+    background-color: #45a049;
+}
+
+/* Result section */
+#result {
+
+    margin-top: 15px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    text-align: center;
+}
