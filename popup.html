@@ -11,24 +11,26 @@
 
 <body>
 
-    <!-- Main Title -->
     <h1>PULSECORE</h1>
 
-    <!-- Text area where user writes text -->
+    <!-- Video title will appear here -->
+    <h3 id="videoTitle">
+        Loading title...
+    </h3>
+
     <textarea 
         id="userText"
         placeholder="Write something here..."
     ></textarea>
 
-    <!-- Predict button -->
     <button id="predictBtn">
         Predict Sentiment
     </button>
 
-    <!-- Here we will show result -->
     <div id="result"></div>
+    <!-- Comments section -->
+    <div id="commentsContainer"></div>
 
-    <!-- Link JavaScript -->
     <script src="popup.js"></script>
 
 </body>

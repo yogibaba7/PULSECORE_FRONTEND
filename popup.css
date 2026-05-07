@@ -75,3 +75,34 @@ button:hover {
 
     text-align: center;
 }
+
+/* Comments section */
+#commentsContainer {
+
+    margin-top: 15px;
+
+    max-height: 200px;
+
+    overflow-y: auto;
+
+    background-color: white;
+
+    padding: 10px;
+
+    border-radius: 8px;
+}
+
+
+/* Individual comment */
+.comment {
+
+    padding: 8px;
+
+    margin-bottom: 8px;
+
+    background-color: #f1f1f1;
+
+    border-radius: 5px;
+
+    font-size: 14px;
+}

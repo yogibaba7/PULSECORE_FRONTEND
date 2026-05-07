@@ -1,42 +1,80 @@
-
 // This file runs inside YouTube webpage
 
 
-// Function to get YouTube video title
-function getVideoTitle() {
+// Function to wait for title
+function waitForTitle(callback) {
 
-    // Find title element from YouTube page
-    const titleElement = document.querySelector(
-        "h1.ytd-watch-metadata"
+    // Check every 500ms
+    const interval = setInterval(() => {
+
+        // Find title element
+        const titleElement = document.querySelector(
+            "h1.ytd-watch-metadata"
+        );
+
+        // If title found
+        if(titleElement && titleElement.innerText.trim() !== "") {
+
+            // Stop checking
+            clearInterval(interval);
+
+            // Send title back
+            callback(titleElement.innerText);
+        }
+
+    }, 500);
+}
+
+// Function to get YouTube comments
+function getComments() {
+
+    // Select all comment elements
+    const commentElements = document.querySelectorAll(
+        "#content-text"
     );
 
-    // If title exists
-    if(titleElement) {
+    // Convert NodeList into array
+    const comments = Array.from(commentElements)
 
-        // Return title text
-        return titleElement.innerText;
-    }
+        // Extract text from each comment
+        .map(comment => comment.innerText)
 
-    // If title not found
-    return "Title not found";
+        // Remove empty comments
+        .filter(comment => comment.trim() !== "");
+
+    // Return first 5 comments
+    return comments.slice(0, 5);
 }
 
 
 
-// Listen for messages from popup.js
+// Listen for popup message
 chrome.runtime.onMessage.addListener(
 
     (message, sender, sendResponse) => {
 
-        // If popup asks for title
+        // Get video title
         if(message.type === "GET_TITLE") {
 
-            // Get title
-            const title = getVideoTitle();
+            waitForTitle((title) => {
 
-            // Send title back
+                sendResponse({
+                    title: title
+                });
+
+            });
+
+            return true;
+        }
+
+
+        // Get YouTube comments
+        if(message.type === "GET_COMMENTS") {
+
+            const comments = getComments();
+
             sendResponse({
-                title: title
+                comments: comments
             });
         }
     }
