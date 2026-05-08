@@ -1,14 +1,52 @@
 
-// Get title element
-const titleElement = document.getElementById("videoTitle");
+// ======================================
+// GET HTML ELEMENTS
+// ======================================
 
-// Get comments container
-const commentsContainer = document.getElementById(
-    "commentsContainer"
-);
+// Video title
+const titleElement =
+    document.getElementById("videoTitle");
 
 
-// Ask content.js for comments
+// Analyze button
+const predictBtn =
+    document.getElementById("predictBtn");
+
+
+// Analysis container
+const analysisContainer =
+    document.getElementById("analysisContainer");
+
+
+// Top comments container
+const topCommentsContainer =
+    document.getElementById(
+        "topCommentsContainer"
+    );
+
+
+
+
+// ======================================
+// EXTRACT VIDEO ID
+// ======================================
+
+function getVideoId(url) {
+
+    // Create URL object
+    const urlObj = new URL(url);
+
+    // Return video ID
+    return urlObj.searchParams.get("v");
+}
+
+
+
+
+// ======================================
+// FETCH VIDEO TITLE
+// ======================================
+
 chrome.tabs.query(
 
     {
@@ -18,133 +56,190 @@ chrome.tabs.query(
 
     (tabs) => {
 
-        chrome.tabs.sendMessage(
+        // Current URL
+        const currentUrl = tabs[0].url;
 
-            tabs[0].id,
+        // Video ID
+        const videoId =
+            getVideoId(currentUrl);
 
-            {
-                type: "GET_COMMENTS"
-            },
 
-            (response) => {
-
-                // If comments exist
-                if(response && response.comments) {
-
-                    // Loop through comments
-                    response.comments.forEach(comment => {
-
-                        // Create div
-                        const div = document.createElement("div");
-
-                        // Add class
-                        div.className = "comment";
-
-                        // Add comment text
-                        div.innerText = comment;
-
-                        // Add into container
-                        commentsContainer.appendChild(div);
-                    });
-                }
-            }
-        );
-    }
-);
-
-// Ask current tab for YouTube title
-chrome.tabs.query(
-
-    {
-        active: true,
-        currentWindow: true
-    },
-
-    (tabs) => {
-
-        // Send message to content.js
-        chrome.tabs.sendMessage(
-
-            tabs[0].id,
-
-            {
-                type: "GET_TITLE"
-            },
-
-            (response) => {
-
-                // Show title in extension
-                if(response && response.title) {
-
-                    titleElement.innerText = response.title;
-                }
-            }
-        );
+        // Show video ID temporarily
+        titleElement.innerText =
+            `Video ID: ${videoId}`;
     }
 );
 
 
-// Get button from HTML
-const predictBtn = document.getElementById("predictBtn");
-
-// Get textarea
-const userText = document.getElementById("userText");
-
-// Get result div
-const resultDiv = document.getElementById("result");
 
 
-// Add click event on button
-predictBtn.addEventListener("click", async () => {
+// ======================================
+// ANALYZE COMMENTS
+// ======================================
 
-    // Get text written by user
-    const text = userText.value;
+predictBtn.addEventListener(
 
-    // If text is empty
-    if(text.trim() === "") {
+    "click",
 
-        resultDiv.innerText = "Please write something.";
+    async () => {
 
-        return;
+        try {
+
+            // Loading state
+            analysisContainer.innerHTML =
+
+                "<p>Analyzing comments...</p>";
+
+
+            topCommentsContainer.innerHTML =
+
+                "<h3>Top Comments</h3>";
+
+
+            // Get active tab
+            const tabs =
+                await chrome.tabs.query({
+
+                    active: true,
+
+                    currentWindow: true
+                });
+
+
+            // Current URL
+            const currentUrl =
+                tabs[0].url;
+
+
+            // Extract video ID
+            const videoId =
+                getVideoId(currentUrl);
+
+
+            // Send video ID to FastAPI
+            const response = await fetch(
+
+                "http://127.0.0.1:8000/analyze-video",
+
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        VedioId: videoId
+                    })
+                }
+            );
+
+
+            // Convert response to JSON
+            const data =
+                await response.json();
+
+
+
+
+            // ==================================
+            // SHOW ANALYTICS
+            // ==================================
+
+            analysisContainer.innerHTML = `
+
+                <h3>Analysis</h3>
+
+                <p>
+                    <strong>
+                        Total Comments:
+                    </strong>
+
+                    ${data.total_comments}
+                </p>
+
+                <p>
+                    <strong>
+                        Analyzed Comments:
+                    </strong>
+
+                    ${data.analyzed_comments}
+                </p>
+
+                <p>
+                    😊 Positive:
+                    ${data.positive_percent}%
+                </p>
+
+                <p>
+                    😐 Neutral:
+                    ${data.neutral_percent}%
+                </p>
+
+                <p>
+                    😡 Negative:
+                    ${data.negative_percent}%
+                </p>
+            `;
+
+
+
+
+            // ==================================
+            // SHOW TOP 5 COMMENTS
+            // ==================================
+
+            data.results.forEach(item => {
+
+                // Create card
+                const card =
+                    document.createElement("div");
+
+
+                // Add class
+                card.className =
+                    "commentCard";
+
+
+                // Add HTML
+                card.innerHTML = `
+
+                    <p>
+                        ${item.comment}
+                    </p>
+
+                    <p class="sentiment">
+
+                        Sentiment:
+                        ${item.sentiment}
+
+                    </p>
+                `;
+
+
+                // Add into container
+                topCommentsContainer
+                    .appendChild(card);
+            });
+
+        }
+
+
+        // ==================================
+        // ERROR HANDLING
+        // ==================================
+
+        catch(error) {
+
+            console.log(error);
+
+            analysisContainer.innerHTML =
+
+                "<p>Error analyzing comments.</p>";
+        }
     }
-
-    // Show loading message
-    resultDiv.innerText = "Predicting...";
-
-
-    try {
-
-        // Send request to your API
-        const response = await fetch("http://127.0.0.1:8000/predict", {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            // Send text to API
-            body: JSON.stringify({
-                comment: text
-            })
-        });
-
-
-        // Convert response into JSON
-        const data = await response.json();
-
-
-        // Show prediction result
-        resultDiv.innerText = `Sentiment: ${data.Prediction}`;
-
-    }
-
-    // If error occurs
-    catch(error) {
-
-        console.log(error);
-
-        resultDiv.innerText = "Error calling API";
-    }
-
-});
+);

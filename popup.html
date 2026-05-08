@@ -1,35 +1,57 @@
-
 <!DOCTYPE html>
 <html>
 
 <head>
 
-    <!-- Link CSS file -->
+    <meta charset="UTF-8">
+
+    <title>PulseCore</title>
+
     <link rel="stylesheet" href="popup.css">
 
 </head>
 
 <body>
 
-    <h1>PULSECORE</h1>
+    <!-- Extension title -->
+    <h1>PulseCore</h1>
 
-    <!-- Video title will appear here -->
-    <h3 id="videoTitle">
+
+    <!-- Video title -->
+    <h2 id="videoTitle">
         Loading title...
-    </h3>
+    </h2>
 
-    <textarea 
-        id="userText"
-        placeholder="Write something here..."
-    ></textarea>
 
+    <!-- Analyze button -->
     <button id="predictBtn">
-        Predict Sentiment
+        Analyze Comments
     </button>
 
-    <div id="result"></div>
-    <!-- Comments section -->
-    <div id="commentsContainer"></div>
+
+    <!-- Analytics section -->
+    <div id="analysisContainer">
+
+        <h3>Analysis</h3>
+
+        <p>Total Comments: 0</p>
+
+        <p>😊 Positive: 0%</p>
+
+        <p>😐 Neutral: 0%</p>
+
+        <p>😡 Negative: 0%</p>
+
+    </div>
+
+
+    <!-- Top comments section -->
+    <div id="topCommentsContainer">
+
+        <h3>Top Comments</h3>
+
+    </div>
+
 
     <script src="popup.js"></script>
 
