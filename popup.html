@@ -8,6 +8,8 @@
     <title>PulseCore</title>
 
     <link rel="stylesheet" href="popup.css">
+    <script src="chart.js"></script>
+    <script src="wordcloud.js"></script>
 
 </head>
 
@@ -28,6 +30,26 @@
         Analyze Comments
     </button>
 
+    <!-- KPI Section -->
+    <div id="kpiContainer">
+
+        <div class="kpiCard">
+
+            <h3>Total Comments</h3>
+
+            <p id="totalCommentsKPI">0</p>
+
+        </div>
+
+        <div class="kpiCard">
+
+            <h3>Avg Words / Comment</h3>
+
+            <p id="avgWordsKPI">0</p>
+
+        </div>
+
+    </div>
 
     <!-- Analytics section -->
     <div id="analysisContainer">
@@ -44,6 +66,29 @@
 
     </div>
 
+    <div id="chartContainer">
+
+    <canvas id="sentimentChart"></canvas>
+
+    </div>
+
+    <!-- Word Cloud Container -->
+    <div id="wordCloudContainer">
+
+        <h3>Trending Words</h3>
+
+        <canvas
+            id="wordCloudCanvas"
+            width="500"
+            height="300">
+        </canvas>
+
+    </div>
+
+    <!-- Sentiment Trend Chart -->
+    <div id="trendChartContainer">
+        <canvas id="trendChart"></canvas>
+    </div>
 
     <!-- Top comments section -->
     <div id="topCommentsContainer">
